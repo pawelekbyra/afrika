@@ -4,7 +4,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'http://localhost:3001/api', // Upewnij się, że port jest zgodny z serwerem
+  baseURL: '/api', // Używamy ścieżki relatywnej, resztą zajmie się proxy Vite
 });
 
 // Interceptor do dodawania tokena JWT do każdego zapytania
@@ -15,5 +15,14 @@ api.interceptors.request.use(config => {
   }
   return config;
 });
+
+// Funkcja do pobierania slajdów
+export const fetchSlides = () => api.get('/slides');
+
+// Funkcje do autentykacji
+export const registerUser = (userData) => api.post('/auth/register', userData);
+export const loginUser = (userData) => api.post('/auth/login', userData);
+export const getUserStatus = () => api.get('/auth/status');
+
 
 export default api;
