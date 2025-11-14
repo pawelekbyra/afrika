@@ -4,6 +4,7 @@
 import React, { useEffect, useState } from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { fetchSlides } from '../api'; // Importujemy dedykowaną funkcję!
+import InteractiveWall from '../components/InteractiveWall'; // Importujemy komponent
 
 import 'swiper/css';
 import './VideoPlayerPage.css';
@@ -12,6 +13,8 @@ const VideoPlayerPage = () => {
   const [slides, setSlides] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  // Nowy stan do śledzenia zniszczonych ścian
+  const [destroyedWalls, setDestroyedWalls] = useState(new Set());
 
   useEffect(() => {
     const loadSlides = async () => {
@@ -28,6 +31,12 @@ const VideoPlayerPage = () => {
     };
     loadSlides();
   }, []);
+
+  // Funkcja do obsługi zniszczenia ściany
+  const handleWallDestroyed = (slideId) => {
+    setDestroyedWalls((prev) => new Set(prev).add(slideId));
+  };
+
 
   if (loading) {
     return <div className="loading-message">Ładowanie...</div>;
@@ -54,6 +63,12 @@ const VideoPlayerPage = () => {
           )}
           {slide.type === 'image' && (
             <img src={slide.src} alt={slide.title} className="slide-image" />
+          )}
+          {/* Warunkowe renderowanie ściany */}
+          {!destroyedWalls.has(slide._id) && (
+            <div className="interactive-wall-overlay">
+              <InteractiveWall onWallDestroyed={() => handleWallDestroyed(slide._id)} />
+            </div>
           )}
           <div className="video-info">
             <h3>{slide.title}</h3>
