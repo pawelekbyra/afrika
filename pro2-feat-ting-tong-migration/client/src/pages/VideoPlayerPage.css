@@ -1,36 +1,44 @@
-/* Plik: client/src/pages/VideoPlayerPage.css */
-
 .video-swiper {
   width: 100%;
   height: 100vh;
 }
 
 .video-slide {
+  position: relative;
   display: flex;
   justify-content: center;
   align-items: center;
-  position: relative;
-  background-color: black;
+  background-color: #000;
 }
 
-.video-slide video {
+.video-slide video,
+.video-slide .slide-image {
   width: 100%;
   height: 100%;
-  object-fit: contain; /* Używamy contain, aby całe wideo było widoczne */
+  object-fit: contain;
 }
 
-.video-title {
+.video-info {
   position: absolute;
   bottom: 20px;
   left: 20px;
   color: white;
-  background-color: rgba(0, 0, 0, 0.5);
-  padding: 5px 10px;
-  border-radius: 5px;
-  font-size: 1.2rem;
+  z-index: 10;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7);
 }
 
-.error-message {
-    color: red;
-    font-size: 1.5rem;
+/* Nowe style dla interaktywnej ściany */
+.interactive-wall-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 20; /* Wyżej niż wideo, ale niżej niż UI */
+}
+
+.interactive-canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
 }
