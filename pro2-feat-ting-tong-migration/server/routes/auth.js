@@ -5,7 +5,7 @@ const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const { User, UserModel } = require('../config/mock_db'); // Importujemy mocka!
+const User = require('../models/User'); // Importujemy model użytkownika!
 const auth = require('../middleware/auth');
 
 // POST /api/auth/register - Rejestracja nowego użytkownika
@@ -25,7 +25,7 @@ router.post('/register', async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    const newUser = new UserModel({
+    const newUser = new User({
       email,
       password: hashedPassword,
     });

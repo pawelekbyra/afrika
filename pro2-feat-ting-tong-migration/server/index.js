@@ -5,7 +5,7 @@ require('dotenv').config({ path: __dirname + '/.env' });
 
 const express = require('express');
 const cors = require('cors'); // Importujemy CORS
-const { connectDB } = require('./config/mock_db');
+const { connectDB } = require('./config/db');
 
 const authRoutes = require('./routes/auth');
 const slideRoutes = require('./routes/slides');
