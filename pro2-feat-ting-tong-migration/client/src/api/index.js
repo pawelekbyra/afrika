@@ -11,13 +11,30 @@ const api = axios.create({
 api.interceptors.request.use(config => {
   const token = localStorage.getItem('token');
   if (token) {
-    config.headers['x-auth-token'] = token;
+    config.headers.Authorization = `Bearer ${token}`;
   }
   return config;
 });
 
 // Funkcja do pobierania slajdów
 export const fetchSlides = () => api.get('/slides');
+
+// Funkcje do polubień
+export const likeSlide = (slideId) => api.post(`/slides/${slideId}/like`);
+export const unlikeSlide = (slideId) => api.delete(`/slides/${slideId}/like`);
+
+// Funkcje do komentarzy
+export const getComments = (slideId) => api.get(`/slides/${slideId}/comments`);
+export const addComment = (slideId, commentData) => api.post(`/slides/${slideId}/comments`, commentData);
+export const editComment = (commentId, commentData) => api.put(`/comments/${commentId}`, commentData);
+export const deleteComment = (commentId) => api.delete(`/comments/${commentId}`);
+
+// Funkcje do użytkownika
+export const uploadAvatar = (formData) => api.post('/users/avatar', formData, {
+  headers: {
+    'Content-Type': 'multipart/form-data',
+  },
+});
 
 // Funkcje do autentykacji
 export const registerUser = (userData) => api.post('/auth/register', userData);

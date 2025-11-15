@@ -1,29 +1,21 @@
 
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useContext } from 'react';
 import AuthContext from '../context/AuthContext';
+import { uploadAvatar } from '../api';
 import api from '../api';
 
 const AccountPage = () => {
-  const { user, logout } = useContext(AuthContext);
+  const { user, setUser, logout } = useContext(AuthContext);
   const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
+    firstName: user ? user.firstName : '',
+    lastName: user ? user.lastName : '',
+    email: user ? user.email : '',
   });
   const [passwordData, setPasswordData] = useState({
     currentPassword: '',
     newPassword: '',
   });
-
-  useEffect(() => {
-    if (user) {
-      setFormData({
-        firstName: user.firstName,
-        lastName: user.lastName,
-        email: user.email,
-      });
-    }
-  }, [user]);
+  const [avatar, setAvatar] = useState(null);
 
   const handleFormChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -31,6 +23,10 @@ const AccountPage = () => {
 
   const handlePasswordChange = (e) => {
     setPasswordData({ ...passwordData, [e.target.name]: e.target.value });
+  };
+
+  const handleAvatarChange = (e) => {
+    setAvatar(e.target.files[0]);
   };
 
   const handleFormSubmit = async (e) => {
@@ -46,6 +42,18 @@ const AccountPage = () => {
     e.preventDefault();
     try {
       await api.put('/users/password', passwordData);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleAvatarSubmit = async (e) => {
+    e.preventDefault();
+    const formData = new FormData();
+    formData.append('avatar', avatar);
+    try {
+      const { data } = await uploadAvatar(formData);
+      setUser({ ...user, avatar: data.avatar });
     } catch (error) {
       console.error(error);
     }
@@ -69,6 +77,12 @@ const AccountPage = () => {
   return (
     <div>
       <h1>Account</h1>
+      <img src={user.avatar} alt="Avatar" style={{ width: '100px', height: '100px', borderRadius: '50%' }} />
+      <form onSubmit={handleAvatarSubmit}>
+        <input type="file" onChange={handleAvatarChange} />
+        <button type="submit">Upload Avatar</button>
+      </form>
+
       <form onSubmit={handleFormSubmit}>
         <input
           type="text"
