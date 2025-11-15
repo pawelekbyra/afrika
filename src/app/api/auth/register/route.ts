@@ -35,7 +35,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({
         _id: user._id,
         email: user.email,
-        token: generateToken(user._id.toString()),
+        token: generateToken((user._id as string).toString()),
       }, { status: 201 });
     } else {
       return NextResponse.json({ msg: 'Nieprawidłowe dane użytkownika' }, { status: 400 });

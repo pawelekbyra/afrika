@@ -88,7 +88,9 @@ const AccountPage = () => {
     formData.append('avatar', avatar);
     try {
       const { data } = await uploadAvatar(formData);
-      setUser?.({ ...user, avatar: data.avatar });
+      if (user && setUser) {
+        setUser({ ...user, avatar: data.avatar });
+      }
     } catch (error) {
       console.error(error);
     }

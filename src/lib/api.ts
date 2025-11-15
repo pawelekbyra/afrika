@@ -33,4 +33,9 @@ export const deleteSlide = (slideId: string) => api.delete(`/slides/${slideId}`)
 export const likeSlide = (slideId: string) => api.post(`/slides/${slideId}/like`);
 export const unlikeSlide = (slideId: string) => api.delete(`/slides/${slideId}/like`);
 
+export const getComments = (slideId: string) => api.get(`/slides/${slideId}/comments`);
+export const addComment = (slideId: string, commentData: { content: string; parent?: string }) => api.post(`/slides/${slideId}/comments`, commentData);
+export const editComment = (commentId: string, commentData: { content: string }) => api.put(`/comments/${commentId}`, commentData);
+export const deleteComment = (commentId: string) => api.delete(`/comments/${commentId}`);
+
 export default api;

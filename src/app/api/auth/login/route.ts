@@ -27,7 +27,7 @@ export async function POST(req: NextRequest) {
         displayName: user.displayName,
         avatar: user.avatar,
         isProfileComplete: user.isProfileComplete,
-        token: generateToken(user._id.toString()),
+        token: generateToken((user._id as string).toString()),
       });
     } else {
       return NextResponse.json({ msg: 'Nieprawidłowy email lub hasło' }, { status: 401 });

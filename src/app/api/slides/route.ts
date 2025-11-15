@@ -4,7 +4,6 @@ import dbConnect from '@/lib/db';
 import Slide from '@/lib/models/Slide';
 import Like from '@/lib/models/Like';
 import { verifyToken } from '@/lib/auth';
-import { admin } from '@/lib/admin';
 
 export async function GET(req: NextRequest) {
   await dbConnect();
@@ -36,10 +35,15 @@ export async function GET(req: NextRequest) {
   }
 }
 
-export const POST = admin(async (req, user) => {
+export async function POST(req: NextRequest) {
   await dbConnect();
 
   try {
+    const user = await verifyToken(req);
+    if (!user || (user as any).role !== 'admin') {
+      return NextResponse.json({ message: 'Not authorized' }, { status: 401 });
+    }
+
     const { type, src, title, author } = await req.json();
     const newSlide = new Slide({ type, src, title, author });
     const savedSlide = await newSlide.save();
@@ -47,4 +51,4 @@ export const POST = admin(async (req, user) => {
   } catch (err) {
     return NextResponse.json({ message: (err as Error).message }, { status: 400 });
   }
-});
+}
