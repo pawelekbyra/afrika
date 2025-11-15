@@ -1,34 +1,71 @@
-// Plik: server/models/User.js
-// Ten plik definiuje schemat i model użytkownika dla bazy danych MongoDB przy użyciu Mongoose.
 
 const mongoose = require('mongoose');
+const bcrypt = require('bcrypt');
 
-// Definicja schematu użytkownika
 const UserSchema = new mongoose.Schema(
   {
     email: {
       type: String,
       required: [true, 'Adres email jest wymagany.'],
       unique: true,
-      trim: true, // Usuwa białe znaki z początku i końca
-      lowercase: true, // Zapisuje email małymi literami
+      trim: true,
+      lowercase: true,
       match: [/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/, 'Proszę podać prawidłowy adres email.'],
     },
     password: {
       type: String,
       required: [true, 'Hasło jest wymagane.'],
     },
-    // Dodatkowe pola, które mogą być potrzebne w przyszłości
-    // np. is_profile_complete, avatar_url, etc.
+    firstName: {
+      type: String,
+      trim: true,
+      default: '',
+    },
+    lastName: {
+      type: String,
+      trim: true,
+      default: '',
+    },
+    displayName: {
+      type: String,
+      trim: true,
+    },
+    avatar: {
+      type: String,
+      default: '',
+    },
+    emailConsent: {
+      type: Boolean,
+      default: false,
+    },
+    emailLanguage: {
+      type: String,
+      enum: ['pl', 'en'],
+      default: 'pl',
+    },
+    isProfileComplete: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
-    // Opcje schematu
-    timestamps: true, // Automatycznie dodaje pola createdAt i updatedAt
+    timestamps: true,
   }
 );
 
-// Tworzenie i eksportowanie modelu na podstawie schematu
-// Mongoose automatycznie stworzy kolekcję o nazwie 'users' (w liczbie mnogiej)
+UserSchema.pre('save', async function (next) {
+  if (!this.isModified('password')) {
+    return next();
+  }
+  const salt = await bcrypt.genSalt(10);
+  this.password = await bcrypt.hash(this.password, salt);
+  next();
+});
+
+UserSchema.methods.matchPassword = async function (enteredPassword) {
+  return await bcrypt.compare(enteredPassword, this.password);
+};
+
 const User = mongoose.model('User', UserSchema);
 
 module.exports = User;
