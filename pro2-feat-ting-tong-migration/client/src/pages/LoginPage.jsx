@@ -1,13 +1,13 @@
-// Plik: client/src/pages/LoginPage.jsx
 
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
-import api from '../api';
+import AuthContext from '../context/AuthContext';
 import './AuthPages.css';
 
 const LoginPage = () => {
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [error, setError] = useState('');
+  const { login } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -18,9 +18,8 @@ const LoginPage = () => {
     e.preventDefault();
     setError('');
     try {
-      const response = await api.post('/auth/login', formData);
-      localStorage.setItem('token', response.data.token);
-      navigate('/'); // Przekieruj na stronę główną po sukcesie
+      await login(formData.email, formData.password);
+      navigate('/account');
     } catch (err) {
       setError(err.response?.data?.msg || 'Logowanie nie powiodło się');
     }

@@ -11,8 +11,7 @@ import api from '../api';
 import 'swiper/css';
 import './VideoPlayerPage.css';
 
-// TODO: Replace with your own publishable key
-const stripePromise = loadStripe('pk_test_TYooMQauvdEDq54NiTphI7jx');
+const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
 
 const VideoPlayerPage = () => {
   const [slides, setSlides] = useState([]);

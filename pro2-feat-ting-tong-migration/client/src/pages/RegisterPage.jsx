@@ -1,13 +1,13 @@
-// Plik: client/src/pages/RegisterPage.jsx
 
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
-import api from '../api';
+import AuthContext from '../context/AuthContext';
 import './AuthPages.css';
 
 const RegisterPage = () => {
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [error, setError] = useState('');
+  const { register } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -18,9 +18,8 @@ const RegisterPage = () => {
     e.preventDefault();
     setError('');
     try {
-      const response = await api.post('/auth/register', formData);
-      localStorage.setItem('token', response.data.token);
-      navigate('/'); // Przekieruj na stronę główną po sukcesie
+      await register(formData.email, formData.password);
+      navigate('/account');
     } catch (err) {
       setError(err.response?.data?.msg || 'Rejestracja nie powiodła się');
     }
