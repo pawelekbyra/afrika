@@ -19,8 +19,16 @@
       "destination": "/pro2-feat-ting-tong-migration/server/index"
     },
     {
+      "source": "/assets/(.*)",
+      "destination": "/pro2-feat-ting-tong-migration/client/dist/assets/$1"
+    },
+    {
+      "source": "/(.*)\\.(ico|svg|png|jpg|jpeg|gif|webp)",
+      "destination": "/pro2-feat-ting-tong-migration/client/dist/$1.$2"
+    },
+    {
       "source": "/(.*)",
-      "destination": "/pro2-feat-ting-tong-migration/client/dist/$1"
+      "destination": "/pro2-feat-ting-tong-migration/client/dist/index.html"
     }
   ]
 }
