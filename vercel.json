@@ -8,9 +8,7 @@
     {
       "src": "client/package.json",
       "use": "@vercel/static-build",
-      "configuration": {
-        "distDir": "dist"
-      }
+      "outputDirectory": "dist"
     }
   ],
   "rewrites": [
