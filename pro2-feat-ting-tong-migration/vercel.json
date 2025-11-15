@@ -2,33 +2,29 @@
   "version": 2,
   "builds": [
     {
-      "src": "server/index.js",
+      "src": "pro2-feat-ting-tong-migration/server/index.js",
       "use": "@vercel/node"
     },
     {
-      "src": "client/package.json",
+      "src": "pro2-feat-ting-tong-migration/client/package.json",
       "use": "@vercel/static-build",
       "config": {
-        "outputDirectory": "dist"
+        "outputDirectory": "client/dist"
       }
     }
   ],
   "rewrites": [
     {
       "source": "/api/(.*)",
-      "destination": "/server/index"
+      "destination": "/pro2-feat-ting-tong-migration/server/index"
     },
     {
       "source": "/assets/(.*)",
-      "destination": "/client/dist/assets/$1"
-    },
-    {
-      "source": "/(.*)\\.(ico|svg|png|jpg|jpeg|gif|webp)",
-      "destination": "/client/dist/$1.$2"
+      "destination": "/pro2-feat-ting-tong-migration/client/dist/assets/$1"
     },
     {
       "source": "/(.*)",
-      "destination": "/client/dist/index.html"
+      "destination": "/pro2-feat-ting-tong-migration/client/dist/index.html"
     }
   ]
 }
