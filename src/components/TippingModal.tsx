@@ -10,9 +10,9 @@ const TippingModal = () => {
   const stripe = useStripe();
   const elements = useElements();
 
-  const [errorMessage, setErrorMessage] = useState(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  const handleSubmit = async (event) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     if (!stripe || !elements) {
@@ -27,7 +27,7 @@ const TippingModal = () => {
     });
 
     if (error) {
-      setErrorMessage(error.message);
+      setErrorMessage(error.message || null);
     }
   };
 

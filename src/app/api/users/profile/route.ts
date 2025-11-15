@@ -44,7 +44,7 @@ export async function DELETE(req: NextRequest) {
       return NextResponse.json({ msg: 'No token, authorization denied' }, { status: 401 });
     }
 
-    await user.remove();
+    await User.findByIdAndDelete(user._id);
 
     return NextResponse.json({ msg: 'User removed' });
   } catch (err) {

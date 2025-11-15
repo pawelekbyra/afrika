@@ -19,7 +19,7 @@ const InteractiveWall: React.FC<InteractiveWallProps> = ({ onWallDestroyed }) =>
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
 
-    let particles: { x: number, y: number, size: number, speedX: number, speedY: number }[] = [];
+    let particles: Particle[] = [];
     const numberOfParticles = 100;
 
     class Particle {
@@ -29,7 +29,7 @@ const InteractiveWall: React.FC<InteractiveWallProps> = ({ onWallDestroyed }) =>
       speedX: number;
       speedY: number;
 
-      constructor() {
+      constructor(canvas: HTMLCanvasElement) {
         this.x = Math.random() * canvas.width;
         this.y = Math.random() * canvas.height;
         this.size = Math.random() * 5 + 1;
@@ -56,32 +56,34 @@ const InteractiveWall: React.FC<InteractiveWallProps> = ({ onWallDestroyed }) =>
       }
     }
 
-    function init() {
-      particles = [];
-      for (let i = 0; i < numberOfParticles; i++) {
-        particles.push(new Particle());
-      }
-    }
-
-    function animate() {
-      if (!ctx) return;
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      for (let i = 0; i < particles.length; i++) {
-        particles[i].update();
-        particles[i].draw();
-        if (particles[i].size <= 0.3) {
-          particles.splice(i, 1);
-          i--;
+    if (canvas) {
+      const init = () => {
+        particles = [];
+        for (let i = 0; i < numberOfParticles; i++) {
+          particles.push(new Particle(canvas));
         }
       }
-      if (particles.length === 0) {
-        onWallDestroyed();
-      }
-      requestAnimationFrame(animate);
-    }
 
-    init();
-    animate();
+      const animate = () => {
+        if (!ctx) return;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        for (let i = 0; i < particles.length; i++) {
+          particles[i].update();
+          particles[i].draw();
+          if (particles[i].size <= 0.3) {
+            particles.splice(i, 1);
+            i--;
+          }
+        }
+        if (particles.length === 0) {
+          onWallDestroyed();
+        }
+        requestAnimationFrame(animate);
+      }
+
+      init();
+      animate();
+    }
 
   }, [onWallDestroyed]);
 

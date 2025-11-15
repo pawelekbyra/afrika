@@ -1,23 +1,32 @@
 import React, { useState, useEffect } from 'react';
-import PropTypes from 'prop-types';
 import { CommentSection } from 'react-comments-section';
 import './CommentsSection.css';
-import { getComments, addComment, editComment, deleteComment } from '../api';
+import { getComments, addComment, editComment, deleteComment } from '@/lib/api';
+import { CommentData, SubmitActionParams, EditActionParams, DeleteActionParams, IPopulatedComment } from '@/lib/models/interfaces';
 
-const CommentsSection = ({ slideId, currentUser }) => {
-  const [comments, setComments] = useState([]);
+interface CommentsSectionProps {
+  slideId: string;
+  currentUser: {
+    userId: string;
+    avatarUrl: string;
+    fullName: string;
+  } | null;
+}
+
+const CommentsSection: React.FC<CommentsSectionProps> = ({ slideId, currentUser }) => {
+  const [comments, setComments] = useState<CommentData[]>([]);
 
   useEffect(() => {
     const loadComments = async () => {
       try {
         const response = await getComments(slideId);
-        const formattedComments = response.data.map(comment => ({
+        const formattedComments: CommentData[] = response.data.map((comment: IPopulatedComment) => ({
           userId: comment.author._id,
           comId: comment._id,
           fullName: comment.author.displayName,
           text: comment.content,
           avatarUrl: comment.author.avatar || 'https://i.pravatar.cc/150?u=' + comment.author._id,
-          replies: [], // Na razie nie obsługujemy zagnieżdżonych odpowiedzi w ten sposób
+          replies: [],
         }));
         setComments(formattedComments);
       } catch (error) {
@@ -30,10 +39,10 @@ const CommentsSection = ({ slideId, currentUser }) => {
     }
   }, [slideId]);
 
-  const handleCommentSubmit = async (text, parentId = null) => {
+  const handleCommentSubmit = async (text: string, parentId: string | null = null) => {
     try {
-      const response = await addComment(slideId, { content: text, parent: parentId });
-      const newComment = {
+      const response = await addComment(slideId, { content: text, parent: parentId || undefined });
+      const newComment: CommentData = {
         userId: response.data.author._id,
         comId: response.data._id,
         fullName: response.data.author.displayName,
@@ -47,10 +56,10 @@ const CommentsSection = ({ slideId, currentUser }) => {
     }
   };
 
-  const handleCommentEdit = async (text, comId) => {
+  const handleCommentEdit = async (text: string, comId: string) => {
     try {
       const response = await editComment(comId, { content: text });
-      const updatedComment = {
+      const updatedComment: CommentData = {
         userId: response.data.author._id,
         comId: response.data._id,
         fullName: response.data.author.displayName,
@@ -58,16 +67,16 @@ const CommentsSection = ({ slideId, currentUser }) => {
         avatarUrl: response.data.author.avatar || 'https://i.pravatar.cc/150?u=' + response.data.author._id,
         replies: [],
       };
-      setComments(comments.map(c => c.comId === comId ? updatedComment : c));
+      setComments(comments.map((c) => c.comId === comId ? updatedComment : c));
     } catch (error) {
       console.error('Błąd podczas edycji komentarza:', error);
     }
   };
 
-  const handleCommentDelete = async (comId) => {
+  const handleCommentDelete = async (comId: string) => {
     try {
       await deleteComment(comId);
-      setComments(comments.filter(c => c.comId !== comId));
+      setComments(comments.filter((c) => c.comId !== comId));
     } catch (error) {
       console.error('Błąd podczas usuwania komentarza:', error);
     }
@@ -78,20 +87,15 @@ const CommentsSection = ({ slideId, currentUser }) => {
       <CommentSection
         currentUser={currentUser}
         commentData={comments}
-        onSubmitAction={({ text, parentOfRepliedCommentId }) => handleCommentSubmit(text, parentOfRepliedCommentId)}
-        onEditAction={({ text, comId }) => handleCommentEdit(text, comId)}
-        onDeleteAction={({ comIdToDelete }) => handleCommentDelete(comIdToDelete)}
-        currentData={(data) => {
+        onSubmitAction={({ text, parentOfRepliedCommentId }: SubmitActionParams) => handleCommentSubmit(text, parentOfRepliedCommentId)}
+        onEditAction={({ text, comId }: EditActionParams) => handleCommentEdit(text, comId)}
+        onDeleteAction={({ comIdToDelete }: DeleteActionParams) => handleCommentDelete(comIdToDelete)}
+        currentData={(data: CommentData[]) => {
           console.log('current data', data);
         }}
       />
     </div>
   );
-};
-
-CommentsSection.propTypes = {
-  slideId: PropTypes.string.isRequired,
-  currentUser: PropTypes.object.isRequired,
 };
 
 export default CommentsSection;

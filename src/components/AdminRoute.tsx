@@ -3,7 +3,13 @@ import { Navigate, Outlet } from 'react-router-dom';
 import AuthContext from '../context/AuthContext';
 
 const AdminRoute = () => {
-  const { user, loading } = useContext(AuthContext);
+  const auth = useContext(AuthContext);
+
+  if (!auth) {
+    return <div>Loading...</div>;
+  }
+
+  const { user, loading } = auth;
 
   if (loading) {
     return <div>Loading...</div>;

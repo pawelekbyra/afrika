@@ -5,13 +5,7 @@ import Slide from '@/lib/models/Slide';
 import Like from '@/lib/models/Like';
 import { verifyToken } from '@/lib/auth';
 
-interface Params {
-  params: {
-    id: string;
-  };
-}
-
-export async function POST(req: NextRequest, { params }: Params) {
+export async function POST(req: NextRequest, context: { params: Promise<{ id: string }> }) {
   await dbConnect();
 
   try {
@@ -20,7 +14,7 @@ export async function POST(req: NextRequest, { params }: Params) {
       return NextResponse.json({ msg: 'No token, authorization denied' }, { status: 401 });
     }
 
-    const slideId = params.id;
+    const { id: slideId } = await context.params;
 
     const slide = await Slide.findById(slideId);
     if (!slide) {
@@ -45,7 +39,7 @@ export async function POST(req: NextRequest, { params }: Params) {
   }
 }
 
-export async function DELETE(req: NextRequest, { params }: Params) {
+export async function DELETE(req: NextRequest, context: { params: Promise<{ id: string }> }) {
   await dbConnect();
 
   try {
@@ -54,7 +48,7 @@ export async function DELETE(req: NextRequest, { params }: Params) {
       return NextResponse.json({ msg: 'No token, authorization denied' }, { status: 401 });
     }
 
-    const slideId = params.id;
+    const { id: slideId } = await context.params;
 
     const like = await Like.findOneAndDelete({ slide: slideId, user: user._id });
     if (!like) {

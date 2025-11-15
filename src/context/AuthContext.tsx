@@ -8,6 +8,10 @@ interface User {
   _id: string;
   email: string;
   isAdmin: boolean;
+  firstName: string;
+  lastName: string;
+  displayName: string;
+  avatar: string;
 }
 
 interface AuthContextType {
@@ -41,7 +45,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     checkUser();
   }, []);
 
-  const login = async (email, password) => {
+  const login = async (email: string, password: string) => {
     try {
       const res = await api.post('/auth/login', { email, password });
       if (typeof window !== 'undefined') {
@@ -55,7 +59,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  const register = async (email, password) => {
+  const register = async (email: string, password: string) => {
     try {
       const res = await api.post('/auth/register', { email, password });
       if (typeof window !== 'undefined') {

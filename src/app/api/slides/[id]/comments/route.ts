@@ -5,17 +5,12 @@ import Comment from '@/lib/models/Comment';
 import Slide from '@/lib/models/Slide';
 import { verifyToken } from '@/lib/auth';
 
-interface Params {
-  params: {
-    id: string;
-  };
-}
-
-export async function GET(req: NextRequest, { params }: Params) {
+export async function GET(req: NextRequest, context: { params: Promise<{ id: string }> }) {
   await dbConnect();
 
   try {
-    const comments = await Comment.find({ slide: params.id }).populate('author', 'displayName avatar').sort({ createdAt: 'asc' });
+    const { id } = await context.params;
+    const comments = await Comment.find({ slide: id }).populate('author', 'displayName avatar').sort({ createdAt: 'asc' });
     return NextResponse.json(comments);
   } catch (err) {
     console.error((err as Error).message);
@@ -23,7 +18,7 @@ export async function GET(req: NextRequest, { params }: Params) {
   }
 }
 
-export async function POST(req: NextRequest, { params }: Params) {
+export async function POST(req: NextRequest, context: { params: Promise<{ id: string }> }) {
   await dbConnect();
 
   try {
@@ -31,8 +26,8 @@ export async function POST(req: NextRequest, { params }: Params) {
     if (!user) {
       return NextResponse.json({ msg: 'No token, authorization denied' }, { status: 401 });
     }
-
-    const slide = await Slide.findById(params.id);
+    const { id } = await context.params;
+    const slide = await Slide.findById(id);
     if (!slide) {
       return NextResponse.json({ msg: 'Slide not found' }, { status: 404 });
     }
@@ -42,7 +37,7 @@ export async function POST(req: NextRequest, { params }: Params) {
     const newComment = new Comment({
       content,
       author: user.id,
-      slide: params.id,
+      slide: id,
       parent: parent || null,
     });
 
