@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { CommentSection } from 'react-comments-section';
-import 'react-comments-section/dist/index.css';
+import './CommentsSection.css';
 import { getComments, addComment, editComment, deleteComment } from '../api';
 
 const CommentsSection = ({ slideId, currentUser }) => {
