@@ -1,6 +1,7 @@
 
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const User = require('../models/User');
+const Donation = require('../models/Donation');
 
 const createPaymentIntent = async (req, res) => {
   const { amount, currency } = req.body;
@@ -43,6 +44,15 @@ const stripeWebhook = async (req, res) => {
         const password = Math.random().toString(36).slice(-8);
         user = await User.create({ email, password });
       }
+
+      // Zapisz darowiznę
+      await Donation.create({
+        user: user._id,
+        paymentIntentId: paymentIntent.id,
+        amount: paymentIntent.amount / 100,
+        currency: paymentIntent.currency,
+      });
+
     } catch (err) {
       console.error(err);
     }

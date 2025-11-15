@@ -1,7 +1,7 @@
 
-import React, { useState, useContext } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import AuthContext from '../context/AuthContext';
-import { uploadAvatar } from '../api';
+import { uploadAvatar, getDonationHistory } from '../api';
 import api from '../api';
 
 const AccountPage = () => {
@@ -16,6 +16,21 @@ const AccountPage = () => {
     newPassword: '',
   });
   const [avatar, setAvatar] = useState(null);
+  const [donations, setDonations] = useState([]);
+
+  useEffect(() => {
+    if (user) {
+      const fetchDonations = async () => {
+        try {
+          const { data } = await getDonationHistory();
+          setDonations(data);
+        } catch (error) {
+          console.error(error);
+        }
+      };
+      fetchDonations();
+    }
+  }, [user]);
 
   const handleFormChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -122,6 +137,17 @@ const AccountPage = () => {
         />
         <button type="submit">Change Password</button>
       </form>
+
+      <div>
+        <h2>Donation History</h2>
+        <ul>
+          {donations.map((donation) => (
+            <li key={donation._id}>
+              {donation.amount} {donation.currency.toUpperCase()} on {new Date(donation.createdAt).toLocaleDateString()}
+            </li>
+          ))}
+        </ul>
+      </div>
 
       <button onClick={handleDeleteAccount}>Delete Account</button>
     </div>

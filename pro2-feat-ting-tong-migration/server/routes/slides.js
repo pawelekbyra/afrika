@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 const Slide = require('../models/Slide');
 const Like = require('../models/Like');
 const auth = require('../middleware/auth');
+const admin = require('../middleware/admin');
 
 // GET /api/slides - Zwraca listę wszystkich slajdów z informacjami o polubieniach
 router.get('/', auth, async (req, res) => {
@@ -28,6 +29,51 @@ router.get('/', auth, async (req, res) => {
     res.status(500).send('Błąd serwera');
   }
 });
+
+// POST /api/slides - Utwórz nowy slajd (tylko admin)
+router.post('/', auth, admin, async (req, res) => {
+  try {
+    const { type, src, title, author } = req.body;
+    const newSlide = new Slide({ type, src, title, author });
+    const savedSlide = await newSlide.save();
+    res.status(201).json(savedSlide);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+});
+
+// PUT /api/slides/:id - Zaktualizuj slajd (tylko admin)
+router.put('/:id', auth, admin, async (req, res) => {
+  try {
+    const { type, src, title, author } = req.body;
+    const updatedSlide = await Slide.findByIdAndUpdate(
+      req.params.id,
+      { type, src, title, author },
+      { new: true }
+    );
+    if (!updatedSlide) {
+      return res.status(404).json({ message: 'Slide not found' });
+    }
+    res.json(updatedSlide);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+});
+
+// DELETE /api/slides/:id - Usuń slajd (tylko admin)
+router.delete('/:id', auth, admin, async (req, res) => {
+  try {
+    const deletedSlide = await Slide.findByIdAndDelete(req.params.id);
+    if (!deletedSlide) {
+      return res.status(404).json({ message: 'Slide not found' });
+    }
+    await Like.deleteMany({ slide: req.params.id });
+    res.json({ message: 'Slide removed' });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
 
 // POST /api/slides/:id/like - Polubienie slajdu
 router.post('/:id/like', auth, async (req, res) => {
