@@ -1,0 +1,44 @@
+
+import mongoose, { Document, Model, Schema } from 'mongoose';
+import { IUser } from './User';
+
+export interface IPushSubscription extends Document {
+  user: IUser['_id'];
+  endpoint: string;
+  keys: {
+    p256dh: string;
+    auth: string;
+  };
+}
+
+const PushSubscriptionSchema: Schema<IPushSubscription> = new Schema(
+  {
+    user: {
+      type: Schema.Types.ObjectId,
+      ref: 'User',
+      required: true,
+    },
+    endpoint: {
+      type: String,
+      required: true,
+      unique: true,
+    },
+    keys: {
+      p256dh: {
+        type: String,
+        required: true,
+      },
+      auth: {
+        type: String,
+        required: true,
+      },
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
+
+const PushSubscription: Model<IPushSubscription> = mongoose.models.PushSubscription || mongoose.model<IPushSubscription>('PushSubscription', PushSubscriptionSchema);
+
+export default PushSubscription;

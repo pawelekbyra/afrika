@@ -1,35 +1,36 @@
-# Projekt przepisania aplikacji Ting Tong z WordPressa na React/Node.js
+This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
-## Cel projektu
+## Getting Started
 
-Ten projekt ma na celu przepisanie istniejącej aplikacji "Ting Tong", pierwotnie zbudowanej jako motyw WordPress, na nowoczesny stos technologiczny składający się z:
+First, run the development server:
 
--   **Frontend:** React (Vite)
--   **Backend:** Node.js (Express)
--   **Wdrożenie:** Vercel
+```bash
+npm run dev
+# or
+yarn dev
+# or
+pnpm dev
+# or
+bun dev
+```
 
-## Kod źródłowy starej aplikacji (Legacy)
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-Pełen kod źródłowy oryginalnego motywu WordPress został zarchiwizowany i znajduje się w folderze `legacy/legacy-wordpress-theme.zip`. Służy on jako punkt odniesienia dla implementowanych funkcjonalności.
+You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
-## Obecny stan prac
+This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
-Aplikacja jest na wczesnym etapie rozwoju. Dotychczas zaimplementowano:
+## Learn More
 
--   **Strukturę projektu:** Przygotowano podział na `client/` (frontend) i `server/` (backend).
--   **Szkielet backendu:** Uruchomiono serwer Node.js z obsługą podstawowych endpointów.
--   **Mock bazy danych:** Backend korzysta z tymczasowej, mockowanej bazy danych do testów.
--   **System uwierzytelniania:** Stworzono strony i logikę do rejestracji i logowania użytkowników.
--   **Zalążek głównej funkcjonalności:** Dodano stronę `VideoPlayerPage`, która docelowo ma zastąpić "interaktywną ścianę" ze starej wersji.
+To learn more about Next.js, take a look at the following resources:
 
-## Dalsze kroki (do zrobienia)
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
-Aby doprowadzić projekt do końca, należy zaimplementować następujące funkcjonalności, wzorując się na starej wersji:
+You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
-1.  **Pełna implementacja "interaktywnej ściany"** na stronie `VideoPlayerPage`.
-2.  **System napiwków (tipping).**
-3.  **System komentarzy.**
-4.  **Połączenie z docelową bazą danych** (zamiast mocków).
-5.  **Migracja danych** użytkowników i treści z bazy WordPress.
-6.  **Pełna stylizacja interfejsu użytkownika (UI/UX),** aby aplikacja wyglądała nowocześnie i była intuicyjna w obsłudze.
-7.  Implementacja pozostałych, mniejszych funkcjonalności i podstron.
+## Deploy on Vercel
+
+The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+
+Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
