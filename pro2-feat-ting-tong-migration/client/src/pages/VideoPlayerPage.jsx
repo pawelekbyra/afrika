@@ -1,26 +1,31 @@
-// Plik: client/src/pages/VideoPlayerPage.jsx
-// Wersja zaktualizowana do korzystania z nowej funkcji API i poprawionego modelu danych.
 
 import React, { useEffect, useState } from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
-import { fetchSlides } from '../api'; // Importujemy dedykowaną funkcję!
-import InteractiveWall from '../components/InteractiveWall'; // Importujemy komponent
+import { fetchSlides } from '../api';
+import InteractiveWall from '../components/InteractiveWall';
+import { loadStripe } from '@stripe/stripe-js';
+import { Elements } from '@stripe/react-stripe-js';
+import TippingModal from '../components/TippingModal';
+import api from '../api';
 
 import 'swiper/css';
 import './VideoPlayerPage.css';
+
+// TODO: Replace with your own publishable key
+const stripePromise = loadStripe('pk_test_TYooMQauvdEDq54NiTphI7jx');
 
 const VideoPlayerPage = () => {
   const [slides, setSlides] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  // Nowy stan do śledzenia zniszczonych ścian
   const [destroyedWalls, setDestroyedWalls] = useState(new Set());
+  const [clientSecret, setClientSecret] = useState('');
 
   useEffect(() => {
     const loadSlides = async () => {
       try {
         setLoading(true);
-        const response = await fetchSlides(); // Używamy nowej funkcji!
+        const response = await fetchSlides();
         setSlides(response.data);
       } catch (err) {
         setError('Nie udało się załadować wideo. Spróbuj ponownie później.');
@@ -32,11 +37,21 @@ const VideoPlayerPage = () => {
     loadSlides();
   }, []);
 
-  // Funkcja do obsługi zniszczenia ściany
   const handleWallDestroyed = (slideId) => {
     setDestroyedWalls((prev) => new Set(prev).add(slideId));
   };
 
+  const createPaymentIntent = async () => {
+    try {
+      const response = await api.post('/payment/create-payment-intent', {
+        amount: 10,
+        currency: 'usd',
+      });
+      setClientSecret(response.data.clientSecret);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   if (loading) {
     return <div className="loading-message">Ładowanie...</div>;
@@ -51,32 +66,41 @@ const VideoPlayerPage = () => {
   }
 
   return (
-    <Swiper
-      direction={'vertical'}
-      className="video-swiper"
-      loop={true}
-    >
-      {slides.map((slide) => (
-        <SwiperSlide key={slide._id} className="video-slide">
-          {slide.type === 'video' && (
-            <video src={slide.src} controls autoPlay muted loop playsInline />
-          )}
-          {slide.type === 'image' && (
-            <img src={slide.src} alt={slide.title} className="slide-image" />
-          )}
-          {/* Warunkowe renderowanie ściany */}
-          {!destroyedWalls.has(slide._id) && (
-            <div className="interactive-wall-overlay">
-              <InteractiveWall onWallDestroyed={() => handleWallDestroyed(slide._id)} />
+    <>
+      <Swiper
+        direction={'vertical'}
+        className="video-swiper"
+        loop={true}
+      >
+        {slides.map((slide) => (
+          <SwiperSlide key={slide._id} className="video-slide">
+            {slide.type === 'video' && (
+              <video src={slide.src} controls autoPlay muted loop playsInline />
+            )}
+            {slide.type === 'image' && (
+              <img src={slide.src} alt={slide.title} className="slide-image" />
+            )}
+            {!destroyedWalls.has(slide._id) && (
+              <div className="interactive-wall-overlay">
+                <InteractiveWall onWallDestroyed={() => handleWallDestroyed(slide._id)} />
+              </div>
+            )}
+            <div className="video-info">
+              <h3>{slide.title}</h3>
+              <p>@{slide.author}</p>
             </div>
-          )}
-          <div className="video-info">
-            <h3>{slide.title}</h3>
-            <p>@{slide.author}</p>
-          </div>
-        </SwiperSlide>
-      ))}
-    </Swiper>
+          </SwiperSlide>
+        ))}
+      </Swiper>
+      <button onClick={createPaymentIntent} className="tip-button">Give a Tip</button>
+      {clientSecret && (
+        <div className="tipping-modal-container">
+          <Elements stripe={stripePromise} options={{ clientSecret }}>
+            <TippingModal />
+          </Elements>
+        </div>
+      )}
+    </>
   );
 };
 
