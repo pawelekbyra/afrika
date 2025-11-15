@@ -1,9 +1,4 @@
 
 > client@0.0.0 dev
-> vite
+> vite --debug
 
-
-  VITE v7.2.2  ready in 581 ms
-
-  ➜  Local:   http://localhost:5173/
-  ➜  Network: use --host to expose

@@ -24,6 +24,7 @@ function App() {
 
   return (
     <Router>
+      <h1>Witaj w Ting Tong!</h1>
       <nav>
         <Link to="/">Home</Link>
         {user ? (
