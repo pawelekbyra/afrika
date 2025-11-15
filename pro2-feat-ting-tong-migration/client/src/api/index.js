@@ -35,6 +35,7 @@ export const uploadAvatar = (formData) => api.post('/users/avatar', formData, {
     'Content-Type': 'multipart/form-data',
   },
 });
+export const getDonationHistory = () => api.get('/users/donations');
 
 // Funkcje do autentykacji
 export const registerUser = (userData) => api.post('/auth/register', userData);

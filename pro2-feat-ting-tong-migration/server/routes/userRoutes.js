@@ -8,6 +8,7 @@ const {
   updateUserProfile,
   changePassword,
   deleteAccount,
+  getDonationHistory,
 } = require('../controllers/userController');
 const auth = require('../middleware/auth');
 
@@ -43,6 +44,7 @@ const upload = multer({
 router.put('/profile', auth, updateUserProfile);
 router.put('/password', auth, changePassword);
 router.delete('/profile', auth, deleteAccount);
+router.get('/donations', auth, getDonationHistory);
 
 // Nowa trasa do przesyłania awatarów
 router.post('/avatar', auth, upload.single('avatar'), async (req, res) => {
