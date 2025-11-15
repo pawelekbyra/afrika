@@ -25,11 +25,7 @@ const SlideSchema = new mongoose.Schema(
       required: [true, 'Autor jest wymagany.'],
       trim: true,
     },
-    likes: {
-      type: Number,
-      default: 0, // Domyślna wartość to 0
-    },
-    // Można dodać referencję do użytkownika, który dodał slajd
+    // Pole `likes` zostało usunięte. Liczba polubień będzie dynamicznie zliczana z kolekcji `likes`.
     // uploadedBy: {
     //   type: mongoose.Schema.Types.ObjectId,
     //   ref: 'User',
