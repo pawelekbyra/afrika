@@ -5,16 +5,21 @@ import PushSubscription from '@/lib/models/PushSubscription';
 import { verifyToken } from '@/lib/auth';
 import webpush from 'web-push';
 
-const vapidPublicKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!;
-const vapidPrivateKey = process.env.VAPID_PRIVATE_KEY!;
-
-webpush.setVapidDetails(
-  'mailto:your-email@example.com',
-  vapidPublicKey,
-  vapidPrivateKey
-);
-
 export async function POST(req: NextRequest) {
+  const vapidPublicKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
+  const vapidPrivateKey = process.env.VAPID_PRIVATE_KEY;
+
+  if (!vapidPublicKey || !vapidPrivateKey) {
+    console.error("VAPID keys are not configured.");
+    return NextResponse.json({ error: "Push notifications are not configured on the server." }, { status: 500 });
+  }
+
+  webpush.setVapidDetails(
+    'mailto:your-email@example.com',
+    vapidPublicKey,
+    vapidPrivateKey
+  );
+
   await dbConnect();
 
   try {

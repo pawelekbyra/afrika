@@ -6,9 +6,17 @@ import dbConnect from '@/lib/db';
 import User from '@/lib/models/User';
 import Donation from '@/lib/models/Donation';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
-
 export async function POST(req: NextRequest) {
+  const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
+  const stripeWebhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+
+  if (!stripeSecretKey || !stripeWebhookSecret) {
+    console.error("Stripe keys are not configured.");
+    return NextResponse.json({ error: "Stripe webhook is not configured." }, { status: 500 });
+  }
+
+  const stripe = new Stripe(stripeSecretKey);
+
   await dbConnect();
 
   const body = await req.text();
@@ -20,7 +28,7 @@ export async function POST(req: NextRequest) {
     event = stripe.webhooks.constructEvent(
       body,
       signature,
-      process.env.STRIPE_WEBHOOK_SECRET!
+      stripeWebhookSecret
     );
   } catch (err) {
     return NextResponse.json({ error: `Webhook Error: ${(err as Error).message}` }, { status: 400 });
